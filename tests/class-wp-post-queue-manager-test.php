@@ -26,8 +26,13 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 
 		$this->manager = $this->getMockBuilder( Manager::class )
 			->setConstructorArgs( array( $this->settings ) )
-			->onlyMethods( array( 'get_current_time' ) )
+			->onlyMethods( array( 'get_current_time', 'get_current_date' ) )
 			->getMock();
+
+		// Mock the get_current_date method to return a DateTime object
+		$current_date = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+		$this->manager->method( 'get_current_date' )
+			->willReturn( $current_date );
 	}
 
 	/**
@@ -227,12 +232,16 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 	public function test_calculate_next_publish_time( $settings, $expected_times, $queued_posts, $current_time = null ) {
 		$this->manager = $this->getMockBuilder( Manager::class )
 			->setConstructorArgs( array( $settings ) )
-			->onlyMethods( array( 'get_current_time' ) )
+			->onlyMethods( array( 'get_current_time', 'get_current_date' ) )
 			->getMock();
 
 		$current_time = $current_time ?? strtotime( 'today 23:59:59' );
 		$this->manager->method( 'get_current_time' )
 			->willReturn( $current_time );
+
+		$current_date = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+		$this->manager->method( 'get_current_date' )
+			->willReturn( $current_date );
 
 		$calculated_times = array();
 		$post_mocks       = array();
@@ -420,6 +429,139 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 			$next_scheduled = wp_next_scheduled( 'publish_queued_post', array( $post_id ) );
 			$this->assertNotFalse( $next_scheduled, 'The post should be rescheduled for publishing when resumed.' );
 		}
+	}
+
+	/**
+	 * Data provider for test_calculate_next_publish_time_with_gmt_offset.
+	 *
+	 * @return array
+	 */
+	public function gmtOffsetProvider() {
+		return array(
+			'GMT offset 0'              => array(
+				'settings'      => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'    => 0,
+				'current_date'  => '2023-10-01',
+				'current_time'  => '05:00:00',
+				// Expected time is the next day at 12:20am, since the time has passed for today
+				'expected_time' => strtotime( '2023-10-02 00:20:00' ),
+			),
+			'GMT offset 0 but its 12am' => array(
+				'settings'      => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'    => 0,
+				'current_date'  => '2023-10-01',
+				'current_time'  => '00:00:00',
+				// Expected time is today at 12:20am, since the time has not passed for today
+				'expected_time' => strtotime( '2023-10-01 00:20:00' ),
+			),
+			'GMT offset 5'              => array(
+				'settings'      => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'    => 5,
+				'current_date'  => '2023-10-01',
+				'current_time'  => '05:00:00',
+				// Expected time is the next day at 12:20am, since the time has passed for today
+				'expected_time' => strtotime( '2023-10-02 00:20:00' ),
+			),
+			'GMT offset -3'             => array(
+				'settings'         => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'       => -3,
+				'current_date'     => '2023-10-01',
+				'current_time_utc' => '18:00:00',
+				// Expected time is the next day at 12:20am, since the time has passed for today
+				'expected_time'    => strtotime( '2023-10-02 00:20:00' ),
+			),
+			'GMT offset -4 but its 1am' => array(
+				'settings'         => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'       => -4,
+				'current_date'     => '2023-10-01',
+				'current_time_utc' => '01:00:00',
+				// Expected time is today at 12:20am, since the time has not passed for today
+				'expected_time'    => strtotime( '2023-10-01 00:20:00' ),
+			),
+			'GMT offset -4 but its 5am' => array(
+				'settings'         => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'       => -4,
+				'current_date'     => '2023-10-01',
+				'current_time_utc' => '05:00:00',
+				// Expected time is the next day at 12:20am, since the time has passed for today
+				'expected_time'    => strtotime( '2023-10-02 00:20:00' ),
+			),
+			'GMT offset 5 but its 11pm' => array(
+				'settings'         => array(
+					'publishTimes' => 2,
+					'startTime'    => '12:00 AM',
+					'endTime'      => '1:00 AM',
+				),
+				'gmt_offset'       => 5,
+				'current_date'     => '2023-10-01',
+				'current_time_utc' => '23:00:00',
+				// Expected time is the next day at 12:20am, since the time has passed for today
+				'expected_time'    => strtotime( '2023-10-02 00:20:00' ),
+			),
+		);
+	}
+
+	/**
+	 * Test that the calculate_next_publish_time method uses the current start or end date when a GMT offset is passed.
+	 *
+	 * @dataProvider gmtOffsetProvider
+	 *
+	 * @param array   $settings         The settings for the manager.
+	 * @param integer $gmt_offset       The GMT offset.
+	 * @param string  $current_date     The current date.
+	 * @param string  $current_time_utc The current time in UTC.
+	 * @param integer $expected_time    The expected publish time.
+	 *
+	 * @return void
+	 */
+	public function test_calculate_next_publish_time_with_gmt_offset( $settings, $gmt_offset, $current_date, $current_time_utc, $expected_time ) {
+		$this->manager = $this->getMockBuilder( Manager::class )
+			->setConstructorArgs( array( $settings ) )
+			->onlyMethods( array( 'get_current_time', 'get_current_date' ) )
+			->getMock();
+
+		$fixed_time = strtotime( $current_date . ' ' . $current_time_utc );
+		$this->manager->method( 'get_current_time' )
+			->willReturn( $fixed_time );
+
+		$fixed_date = new \DateTime( $current_date . ' ' . $current_time_utc, new \DateTimeZone( 'UTC' ) );
+		$this->manager->method( 'get_current_date' )
+			->willReturn( $fixed_date );
+
+		$index             = 0;
+		$last_publish_time = null;
+
+		if ( null !== $last_publish_time ) {
+			$last_publish_time += $gmt_offset * 3600;
+		}
+
+		$next_publish_time = $this->invokeMethod( $this->manager, 'calculate_next_publish_time', array( $index, $last_publish_time, $gmt_offset ) );
+
+		$this->assertEquals( $expected_time, $next_publish_time, 'The start time should be adjusted for the GMT offset.' );
 	}
 
 	/**

@@ -46,6 +46,8 @@ class Admin {
 		add_filter( 'display_post_states', array( $this, 'display_post_states' ), 10, 2 );
 		add_filter( 'post_date_column_status', array( $this, 'post_date_column_status' ), 10, 4 );
 		add_action( 'pre_get_posts', array( $this, 'set_default_queue_order' ) );
+		add_action( 'update_option_timezone_string', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
+		add_action( 'update_option_gmt_offset', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
 	}
 
 	/**
@@ -116,7 +118,8 @@ class Admin {
 				'wpQueuePluginData',
 				array(
 					'settingsUrl'   => admin_url( 'options-general.php' ),
-					'timezone'      => get_option( 'timezone_string' ) ? get_option( 'timezone_string' ) : 'UTC',
+					'timezone'      => get_option( 'timezone_string' ),
+					'gmtOffset'     => get_option( 'gmt_offset' ),
 					'nonce'         => wp_create_nonce( 'wp_rest' ),
 					'publishTimes'  => $this->settings['publishTimes'],
 					'startTime'     => $this->settings['startTime'],
@@ -172,6 +175,15 @@ class Admin {
 		register_setting( 'wp_queue_settings', 'wp_queue_end_time' );
 		register_setting( 'wp_queue_settings', 'wp_queue_paused' );
 
+		$this->settings = $this->get_settings();
+	}
+
+	/**
+	 * Get the settings for the queue.
+	 *
+	 * @return array The settings for the queue.
+	 */
+	public function get_settings() {
 		$default_settings = array(
 			'publishTimes'  => 2,
 			'startTime'     => '12 am',
@@ -179,7 +191,7 @@ class Admin {
 			'wpQueuePaused' => false,
 		);
 
-		$this->settings = array(
+		return array(
 			'publishTimes'  => get_option( 'wp_queue_publish_times', $default_settings['publishTimes'] ),
 			'startTime'     => get_option( 'wp_queue_start_time', $default_settings['startTime'] ),
 			'endTime'       => get_option( 'wp_queue_end_time', $default_settings['endTime'] ),
@@ -345,5 +357,33 @@ class Admin {
 			$query->set( 'orderby', $orderby ? $orderby : 'date' );
 			$query->set( 'order', $order ? $order : 'ASC' );
 		}
+	}
+
+	/**
+	 * Handle recalculating the queue times when the timezone or GMT offset is updated.
+	 *
+	 * @param string $old_value The old value of the setting.
+	 * @param string $new_value The new value of the setting.
+	 *
+	 * @return void
+	 */
+	public function handle_timezone_or_gmt_offset_update( $old_value, $new_value ) {
+		static $has_run = false;
+
+		if ( $has_run || empty( $new_value ) ) {
+			return;
+		}
+
+		$has_run = true;
+
+		$this->settings = $this->get_settings();
+
+		$gmt_offset = null;
+		if ( is_numeric( $new_value ) ) {
+			$gmt_offset = $new_value;
+		}
+
+		$manager = new Manager( $this->settings );
+		$manager->recalculate_publish_times( array_column( $manager->get_current_order(), 'ID' ) );
 	}
 }

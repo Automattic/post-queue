@@ -147,6 +147,39 @@ const SettingsPanel = ( {
 			} );
 	};
 
+	const getTimezoneDisplay = ( timezone, gmtOffset ) => {
+		if ( timezone && ! timezone.includes( 'Etc/GMT' ) ) {
+			return timezone;
+		}
+
+		let tzstring = '';
+		if ( ! timezone || timezone.includes( 'Etc/GMT' ) ) {
+			const offset = parseFloat( gmtOffset );
+			if ( offset === 0 ) {
+				tzstring = 'UTC+0';
+			} else if ( offset < 0 ) {
+				tzstring = `UTC${ offset }`;
+			} else {
+				tzstring = `UTC+${ offset }`;
+			}
+		}
+
+		return tzstring;
+	};
+
+	const getLocalDateTime = ( gmtOffset ) => {
+		try {
+			const date = new Date();
+			const utcTime = date.getTime() + date.getTimezoneOffset() * 60000;
+			const offsetInMilliseconds = parseFloat( gmtOffset ) * 3600 * 1000;
+			const localTime = new Date( utcTime + offsetInMilliseconds );
+			return localTime.toLocaleString();
+		} catch ( _error ) {
+			console.error( 'Error getting local date and time:', _error );
+			return __( 'N/A', 'wp-post-queue' );
+		}
+	};
+
 	return (
 		<div className="settings-panel">
 			<p>
@@ -253,11 +286,18 @@ const SettingsPanel = ( {
 
 			<p>
 				{ __( 'Timezone:', 'wp-post-queue' ) }{ ' ' }
-				{ wpQueuePluginData.timezone } (
+				{ getTimezoneDisplay(
+					wpQueuePluginData.timezone,
+					wpQueuePluginData.gmtOffset
+				) }{ ' ' }
+				(
 				<a href={ wpQueuePluginData.settingsUrl }>
 					{ __( 'change', 'wp-post-queue' ) }
 				</a>
 				)
+				<br />
+				{ __( 'Local Time:', 'wp-post-queue' ) }{ ' ' }
+				{ getLocalDateTime( wpQueuePluginData.gmtOffset ) }
 			</p>
 			<div className="settings-actions">
 				<Button isSecondary onClick={ shuffleQueue }>

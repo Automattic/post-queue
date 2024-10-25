@@ -65,19 +65,41 @@ class Manager {
 	}
 
 	/**
+	 * Gets the current date as a DateTime object.
+	 * This is separated out so it can be overridden for testing easier.
+	 *
+	 * @return \DateTime The current date.
+	 */
+	public function get_current_date() {
+		return new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+	}
+
+	/**
 	 * Calculates the next publish time for a post in the queue.
 	 *
 	 * @param integer      $index             The index of the post in the queue.
 	 * @param integer|null $last_publish_time The last publish time.
+	 * @param integer|null $gmt_offset        The GMT offset.
 	 *
 	 * @return integer The timestamp of the next publish time.
 	 */
-	private function calculate_next_publish_time( $index, $last_publish_time = null ) {
+	private function calculate_next_publish_time( $index, $last_publish_time = null, $gmt_offset = null ) {
 		$posts_per_day = $this->settings['publishTimes'];
-		$start_time    = strtotime( $this->settings['startTime'] );
-		$end_time      = strtotime( $this->settings['endTime'] );
-		$interval      = ( $end_time - $start_time ) / ( $posts_per_day + 1 );
-		$current_time  = $this->get_current_time();
+
+		$gmt_offset = $gmt_offset ? $gmt_offset : get_option( 'gmt_offset' );
+
+		$current_date = $this->get_current_date();
+		if ( $gmt_offset ) {
+			// Convert the GMT offset to seconds, so we can support half hours
+			$gmt_offset_seconds = $gmt_offset * 3600;
+			$current_date->modify( $gmt_offset_seconds . ' seconds' );
+		}
+
+		$start_time = strtotime( $current_date->format( 'Y-m-d' ) . ' ' . $this->settings['startTime'] );
+		$end_time   = strtotime( $current_date->format( 'Y-m-d' ) . ' ' . $this->settings['endTime'] );
+
+		$interval     = ( $end_time - $start_time ) / ( $posts_per_day + 1 );
+		$current_time = $this->get_current_time();
 
 		if ( null === $last_publish_time ) {
 			$last_publish_time = $start_time;
@@ -99,7 +121,7 @@ class Manager {
 
 		if ( $next_publish_time >= $end_time && gmdate( 'Y-m-d', $next_publish_time ) === gmdate( 'Y-m-d', $current_time ) ) {
 			$start_time_only   = gmdate( 'H:i:s', $start_time );
-			$next_publish_time = strtotime( 'tomorrow ' . $start_time_only ) + $interval;
+			$next_publish_time = strtotime( $current_date->format( 'Y-m-d' ) . ' +1 day ' . $start_time_only ) + $interval;
 		} else {
 			$next_day_end_time = strtotime( gmdate( 'Y-m-d', $next_publish_time ) . ' ' . gmdate( 'H:i:s', $end_time ) );
 			if ( $next_publish_time >= $next_day_end_time ) {
@@ -214,11 +236,12 @@ class Manager {
 	/**
 	 * Recalculates the publish times for queued posts based on the new order.
 	 *
-	 * @param array $new_order The new order of the queued posts.
+	 * @param array        $new_order  The new order of the queued posts.
+	 * @param integer|null $gmt_offset The GMT offset.
 	 *
 	 * @return array An array of updated posts with their new publish times.
 	 */
-	public function recalculate_publish_times( $new_order ) {
+	public function recalculate_publish_times( $new_order, $gmt_offset = null ) {
 		$queued_posts = get_posts(
 			array(
 				'post_status' => 'queued',
@@ -248,7 +271,7 @@ class Manager {
 		$last_publish_time = null;
 
 		foreach ( $queued_posts as $index => $post ) {
-			$new_publish_time  = $this->calculate_next_publish_time( $index, $last_publish_time );
+			$new_publish_time  = $this->calculate_next_publish_time( $index, $last_publish_time, $gmt_offset );
 			$last_publish_time = $new_publish_time;
 
 			if ( ! $this->settings['wpQueuePaused'] ) {
