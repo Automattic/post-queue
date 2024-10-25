@@ -23,3 +23,29 @@ use WP_Post_Queue\WP_Post_Queue;
 
 $wp_post_queue = new WP_Post_Queue();
 $wp_post_queue->run();
+
+register_deactivation_hook( __FILE__, 'wp_post_queue_update_queued_posts_status' );
+
+/**
+ * Update the status of queued posts to 'scheduled' on plugin deactivation.
+ *
+ * @return void
+ */
+function wp_post_queue_update_queued_posts_status() {
+	$queued_posts = get_posts(
+		array(
+			'post_status' => 'queued',
+			'post_type'   => 'post',
+			'numberposts' => -1,
+		)
+	);
+
+	foreach ( $queued_posts as $post ) {
+		wp_update_post(
+			array(
+				'ID'          => $post->ID,
+				'post_status' => 'future',
+			)
+		);
+	}
+}
