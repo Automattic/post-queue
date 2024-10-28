@@ -48,6 +48,7 @@ class Admin {
 		add_action( 'pre_get_posts', array( $this, 'set_default_queue_order' ) );
 		add_action( 'update_option_timezone_string', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
 		add_action( 'update_option_gmt_offset', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_classic_editor_assets' ) );
 	}
 
 	/**
@@ -68,10 +69,41 @@ class Admin {
 
 		wp_enqueue_style(
 			'wp-post-queue-editor-css',
-			plugins_url( '/client/editor/index.css', __DIR__ ),
+			plugins_url( '/build/editor.css', __DIR__ ),
 			array(),
 			WP_POST_QUEUE_VERSION
 		);
+	}
+
+	/**
+	 * Enqueue the assets for the Classic Editor.
+	 *
+	 * @param string $hook The current admin page.
+	 *
+	 * @return void
+	 */
+	public function enqueue_classic_editor_assets( $hook ) {
+		global $post;
+
+		$screen = get_current_screen();
+
+		if ( ! use_block_editor_for_post( $post ) && 'post' === $screen->base ) {
+			wp_enqueue_script(
+				'wp-post-queue-classic-editor-script',
+				plugins_url( '/build/classic-editor.js', __DIR__ ),
+				array( 'wp-api', 'wp-api-fetch' ),
+				WP_POST_QUEUE_VERSION,
+				true
+			);
+
+			wp_localize_script(
+				'wp-post-queue-classic-editor-script',
+				'wpQueuePluginData',
+				array(
+					'isNewPost' => 'post-new.php' === $hook ? true : false,
+				)
+			);
+		}
 	}
 
 	/**
