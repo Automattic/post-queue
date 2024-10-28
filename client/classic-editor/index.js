@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Hooks into the UI of the Classic Editor plugin.
@@ -72,7 +73,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 const addQueuedStatusOption = ( selectElement ) => {
 	const queuedOption = document.createElement( 'option' );
 	queuedOption.value = 'queued';
-	queuedOption.textContent = 'Queued';
+	queuedOption.textContent = __( 'Queued', 'wp-post-queue' );
 
 	// Append the "Queued" option to the dropdown
 	selectElement.appendChild( queuedOption );
@@ -104,7 +105,11 @@ const updatePublishButton = ( text ) => {
 
 	const publishButton = document.querySelector( '#publish' );
 	if ( publishButton ) {
-		publishButton.value = text;
+		const label =
+			text === 'Save'
+				? __( 'Save', 'wp-post-queue' )
+				: __( 'Queue', 'wp-post-queue' );
+		publishButton.value = label;
 		publishButton.name = 'save';
 	}
 };
@@ -123,7 +128,11 @@ const updateTimestampDisplay = async ( postStatusSelect ) => {
 		if ( queuedTime ) {
 			const timestampElement = document.querySelector( '#timestamp' );
 			if ( timestampElement ) {
-				timestampElement.innerHTML = `Schedule for: <b>${ queuedTime }</b>`;
+				timestampElement.innerHTML = sprintf(
+					/* translators: %s: The scheduled time. */
+					__( 'Schedule for: <b>%s</b>', 'wp-post-queue' ),
+					queuedTime
+				);
 			}
 		}
 	}
