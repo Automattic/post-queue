@@ -76,7 +76,7 @@ const SettingsPanel = ( {
 				publish_times: localPublishTimes,
 				start_time: localStartTime,
 				end_time: localEndTime,
-				wp_queue_paused: isPaused,
+				wp_queue_paused: !! isPaused,
 			} );
 
 			updateTable( response );

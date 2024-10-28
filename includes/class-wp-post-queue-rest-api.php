@@ -15,6 +15,38 @@ class REST_API {
 	private $settings;
 
 	/**
+	 * The valid times for the queue.
+	 *
+	 * @var array
+	 */
+	private $valid_times = array(
+		'1 am',
+		'2 am',
+		'3 am',
+		'4 am',
+		'5 am',
+		'6 am',
+		'7 am',
+		'8 am',
+		'9 am',
+		'10 am',
+		'11 am',
+		'12 pm',
+		'1 pm',
+		'2 pm',
+		'3 pm',
+		'4 pm',
+		'5 pm',
+		'6 pm',
+		'7 pm',
+		'8 pm',
+		'9 pm',
+		'10 pm',
+		'11 pm',
+		'12 am',
+	);
+
+	/**
 	 * Constructor for the REST_API class.
 	 *
 	 * @param array $settings The settings for the plugin.
@@ -53,6 +85,36 @@ class REST_API {
 				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
+				'args'                => array(
+					'publish_times'   => array(
+						'required'          => false,
+						'type'              => 'integer',
+						'validate_callback' => function ( $param, $request, $key ) {
+							return is_numeric( $param ) && $param >= 0 && $param <= 50;
+						},
+					),
+					'start_time'      => array(
+						'required'          => false,
+						'type'              => 'string',
+						'validate_callback' => function ( $param, $request, $key ) {
+							return is_string( $param ) && in_array( $param, $this->valid_times, true );
+						},
+					),
+					'end_time'        => array(
+						'required'          => false,
+						'type'              => 'string',
+						'validate_callback' => function ( $param, $request, $key ) {
+							return is_string( $param ) && in_array( $param, $this->valid_times, true );
+						},
+					),
+					'wp_queue_paused' => array(
+						'required'          => false,
+						'type'              => 'boolean',
+						'validate_callback' => function ( $param, $request, $key ) {
+							return is_bool( $param );
+						},
+					),
+				),
 			)
 		);
 
@@ -65,6 +127,23 @@ class REST_API {
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
+				'args'                => array(
+					'order' => array(
+						'required'          => true,
+						'type'              => 'array',
+						'validate_callback' => function ( $param, $request, $key ) {
+							if ( ! is_array( $param ) ) {
+								return false;
+							}
+							foreach ( $param as $id ) {
+								if ( ! is_numeric( $id ) ) {
+									return false;
+								}
+							}
+							return true;
+						},
+					),
+				),
 			)
 		);
 
