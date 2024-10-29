@@ -32,10 +32,7 @@ class Admin {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
 		add_action( 'init', array( $this, 'register_post_status' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_management_scripts' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_management_styles' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_notices', array( $this, 'add_settings_to_edit_page' ) );
 		add_action( 'admin_menu', array( $this, 'add_queue_menu_item' ) );
@@ -48,7 +45,35 @@ class Admin {
 		add_action( 'pre_get_posts', array( $this, 'set_default_queue_order' ) );
 		add_action( 'update_option_timezone_string', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
 		add_action( 'update_option_gmt_offset', array( $this, 'handle_timezone_or_gmt_offset_update' ), 10, 2 );
+
+		// Enqueue the scripts and styles for the settings panel, post list, block editor, and classic editor
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_settings_panel_script' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_settings_panel_style' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_post_list_script' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_post_list_style' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_classic_editor_assets' ) );
+	}
+
+	/**
+	 * Register the queued post status with WordPress.
+	 *
+	 * @return void
+	 */
+	public function register_post_status() {
+		register_post_status(
+			'queued',
+			array(
+				'label'                     => __( 'Queued', 'wp-post-queue' ),
+				'public'                    => false,
+				'private'                   => true,
+				'exclude_from_search'       => true,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				// translators: %s is the number of posts.
+				'label_count'               => _n_noop( 'Queued <span class="count">(%s)</span>', 'Queued <span class="count">(%s)</span>', 'wp-post-queue' ),
+			)
+		);
 	}
 
 	/**
@@ -107,24 +132,50 @@ class Admin {
 	}
 
 	/**
-	 * Register the queued post status with WordPress.
+	 * Enqueues the post list script on all pages where the post list is used.
+	 * This is to include things like the 'Queued' status in the bulk edit dropdown and quick edit dropdown.
+	 *
+	 * @param string $hook The current admin page.
 	 *
 	 * @return void
 	 */
-	public function register_post_status() {
-		register_post_status(
-			'queued',
-			array(
-				'label'                     => __( 'Queued', 'wp-post-queue' ),
-				'public'                    => false,
-				'private'                   => true,
-				'exclude_from_search'       => true,
-				'show_in_admin_all_list'    => true,
-				'show_in_admin_status_list' => true,
-				// translators: %s is the number of posts.
-				'label_count'               => _n_noop( 'Queued <span class="count">(%s)</span>', 'Queued <span class="count">(%s)</span>', 'wp-post-queue' ),
-			)
-		);
+	public function enqueue_post_list_script( $hook ) {
+		if ( 'edit.php' === $hook ) {
+			wp_enqueue_script(
+				'wp-post-queue-post-list-script',
+				plugins_url( '/build/post-list.js', __DIR__ ),
+				array( 'wp-data', 'wp-api', 'wp-api-fetch' ),
+				WP_POST_QUEUE_VERSION,
+				true
+			);
+
+			wp_localize_script(
+				'wp-post-queue-post-list-script',
+				'wpQueuePluginPostListData',
+				array(
+					'isQueuePage' => 'queued' === get_query_var( 'post_status' ) ? true : false,
+				)
+			);
+		}
+	}
+
+	/**
+	 * Enqueue the post list style on all pages where the post list is used.
+	 * This is to include things like the 'Queued' status in the bulk edit dropdown and quick edit dropdown.
+	 *
+	 * @param string $hook The current admin page.
+	 *
+	 * @return void
+	 */
+	public function enqueue_post_list_style( $hook ) {
+		if ( 'edit.php' === $hook ) {
+			wp_enqueue_style(
+				'wp-post-queue-post-list-css',
+				plugins_url( '/build/post-list.css', __DIR__ ),
+				array(),
+				WP_POST_QUEUE_VERSION
+			);
+		}
 	}
 
 	/**
@@ -135,7 +186,7 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	public function enqueue_management_scripts( $hook ) {
+	public function enqueue_settings_panel_script( $hook ) {
 		if ( 'edit.php' === $hook && 'queued' === get_query_var( 'post_status' ) ) {
 			wp_enqueue_script(
 				'wp-queue-settings-panel-script',
@@ -159,38 +210,22 @@ class Admin {
 					'wpQueuePaused' => $this->settings['wpQueuePaused'],
 				)
 			);
-
-			wp_enqueue_script(
-				'drag-drop-reorder',
-				plugins_url( '/build/drag-drop-reorder.js', __DIR__ ),
-				array( 'wp-data', 'wp-api', 'wp-api-fetch' ),
-				WP_POST_QUEUE_VERSION,
-				true
-			);
 		}
 	}
 
 	/**
-	 * Enqueue the admin styles for the queue management page.
-	 * This includes the styles for the settings panel, and the drag and drop reorder styles.
+	 * Enqueue the admin styles for the settings panel.
 	 *
 	 * @param string $hook The current admin page.
 	 *
 	 * @return void
 	 */
-	public function enqueue_management_styles( $hook ) {
+	public function enqueue_settings_panel_style( $hook ) {
 		if ( 'edit.php' === $hook && 'queued' === get_query_var( 'post_status' ) ) {
 			wp_enqueue_style(
 				'wp-queue-settings-panel-css',
 				plugins_url( '/build/settings-panel.css', __DIR__ ),
 				array( 'wp-components', 'wp-preferences' ),
-				WP_POST_QUEUE_VERSION
-			);
-
-			wp_enqueue_style(
-				'wp-queue-drag-drop-css',
-				plugins_url( '/build/drag-drop-reorder.css', __DIR__ ),
-				array(),
 				WP_POST_QUEUE_VERSION
 			);
 		}
