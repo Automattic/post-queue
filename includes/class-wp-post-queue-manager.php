@@ -259,26 +259,38 @@ class Manager {
 			)
 		);
 
-		$new_order = array_map(
-			function ( $key ) {
-				return str_replace( 'post-', '', $key );
-			},
-			$new_order
-		);
+		$new_order = array_map( 'intval', $new_order );
 
-		$post_positions = array_flip( $new_order );
-
-		usort(
+		// Separate posts into those that need rearranging and those that don't
+		// This is because $new_order may be a partial order, where only some posts are rearranged.
+		// For example when you drag and drop posts in the post list and have pagination enabled.
+		$rearranged_posts = array_filter(
 			$queued_posts,
-			function ( $a, $b ) use ( $post_positions ) {
-				return $post_positions[ $a->ID ] <=> $post_positions[ $b->ID ];
+			function ( $post ) use ( $new_order ) {
+				return in_array( $post->ID, $new_order, true );
 			}
 		);
+
+		$remaining_posts = array_filter(
+			$queued_posts,
+			function ( $post ) use ( $new_order ) {
+				return ! in_array( $post->ID, $new_order, true );
+			}
+		);
+
+		usort(
+			$rearranged_posts,
+			function ( $a, $b ) use ( $new_order ) {
+				return array_search( $a->ID, $new_order, true ) <=> array_search( $b->ID, $new_order, true );
+			}
+		);
+
+		$sorted_posts = array_merge( $rearranged_posts, $remaining_posts );
 
 		$updated_posts     = array();
 		$last_publish_time = null;
 
-		foreach ( $queued_posts as $index => $post ) {
+		foreach ( $sorted_posts as $index => $post ) {
 			$new_publish_time  = $this->calculate_next_publish_time( $index, $last_publish_time, $gmt_offset );
 			$last_publish_time = $new_publish_time;
 

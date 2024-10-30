@@ -5,7 +5,7 @@ module.exports = {
 	entry: {
 		editor: './client/editor/index.js',
 		'settings-panel': './client/settings-panel/index.js',
-		'drag-drop-reorder': './client/drag-drop-reorder/index.js',
+		'post-list': './client/post-list/index.js',
 		'classic-editor': './client/classic-editor/index.js',
 	},
 	output: {

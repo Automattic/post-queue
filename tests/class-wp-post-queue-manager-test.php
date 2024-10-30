@@ -640,4 +640,27 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 
 		return $method->invokeArgs( $instance, $parameters );
 	}
+
+	/**
+	 * Test that recalculating publish times only rearranges posts in the new order and keeps others in place.
+	 * This is a partial order, where only some posts are rearranged. For example when you drag and drop posts in the post list
+	 * and have pagination enabled.
+	 *
+	 * @return void
+	 */
+	public function test_recalculate_publish_times_partial_order() {
+		$post_ids = array(
+			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
+			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
+			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
+		);
+
+		$new_order = array( $post_ids[1], $post_ids[0] );
+
+		$updated_posts = $this->manager->recalculate_publish_times( $new_order );
+
+		$this->assertEquals( $post_ids[1], $updated_posts[0]['ID'], 'Post 1 should be first in the new order.' );
+		$this->assertEquals( $post_ids[0], $updated_posts[1]['ID'], 'Post 0 should be second in the new order.' );
+		$this->assertEquals( $post_ids[2], $updated_posts[2]['ID'], 'Post 2 should remain in its original position.' );
+	}
 }

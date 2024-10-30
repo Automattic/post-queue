@@ -7,5 +7,6 @@ module.exports = {
 	},
 	globals: {
 		wpQueuePluginData: 'readonly',
+		wpQueuePluginPostListData: 'readonly',
 	},
 };
