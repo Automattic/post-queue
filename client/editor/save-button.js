@@ -53,19 +53,16 @@ const CustomSaveButton = ( {
 			);
 			if ( publishButton ) {
 				if ( isUnsavedPost && editedStatus === 'queued' ) {
-					publishButton.textContent = __( 'Queue', 'wp-post-queue' );
+					publishButton.textContent = __( 'Queue', 'post-queue' );
 					setWasQueued( true );
 				} else if (
 					wasQueued &&
 					isUnsavedPost &&
 					( editedStatus === 'draft' || editedStatus === 'publish' )
 				) {
-					publishButton.textContent = __(
-						'Publish',
-						'wp-post-queue'
-					);
+					publishButton.textContent = __( 'Publish', 'post-queue' );
 				} else if ( wasQueued ) {
-					publishButton.textContent = __( 'Save', 'wp-post-queue' );
+					publishButton.textContent = __( 'Save', 'post-queue' );
 				}
 			}
 		};
@@ -88,7 +85,7 @@ const CustomSaveButton = ( {
 		}
 	} );
 
-	const buttonText = __( 'Save', 'wp-post-queue' );
+	const buttonText = __( 'Save', 'post-queue' );
 	const InnerSaveButton = (
 		<CustomInnerSaveButton
 			buttonText={ buttonText }

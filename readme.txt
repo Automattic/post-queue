@@ -1,4 +1,4 @@
-=== WP Post Queue ===
+=== Post Queue ===
 Contributors: automattic, jshreve
 Tags: post queue, post scheduler
 Requires at least: 6.0
@@ -6,6 +6,7 @@ Tested up to: 6.6
 Stable tag: 0.2.1
 Requires PHP: 7.0
 License: GPLv2 or later
+Text Domain: post-queue
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Effortlessly queue and manage blog posts with daily limits, custom start/end times, and controls to pause or resume publishing as needed.

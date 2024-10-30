@@ -1,31 +1,31 @@
 # Copyright (C) 2024 Automattic
-# This file is distributed under the same license as the WP Post Queue plugin.
+# This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Post Queue 0.2.1\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-post-queue\n"
+"Project-Id-Version: Post Queue 0.2.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/post-queue\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-30T14:24:06+00:00\n"
+"POT-Creation-Date: 2024-10-30T15:16:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
-"X-Domain: wp-post-queue\n"
+"X-Domain: post-queue\n"
 
 #. Plugin Name of the plugin
-#: wp-post-queue.php
-msgid "WP Post Queue"
+#: post-queue.php
+msgid "Post Queue"
 msgstr ""
 
 #. Description of the plugin
-#: wp-post-queue.php
+#: post-queue.php
 msgid "A plugin to add a Tumblr-like queue feature for WordPress posts."
 msgstr ""
 
 #. Author of the plugin
-#: wp-post-queue.php
+#: post-queue.php
 msgid "Automattic"
 msgstr ""
 
@@ -39,11 +39,11 @@ msgstr ""
 #: build/settings-panel.js:197
 #: client/classic-editor/index.js:76
 #: client/editor/status-selector.js:48
-#: client/editor/status-selector.js:112
+#: client/editor/status-selector.js:109
 #: client/utils.js:36
 #: build/classic-editor.js:127
-#: build/editor.js:1629
-#: build/editor.js:1693
+#: build/editor.js:1626
+#: build/editor.js:1687
 #: build/post-list.js:36
 #: build/settings-panel.js:158
 msgid "Queued"
@@ -78,11 +78,11 @@ msgstr ""
 #: build/editor.js:1933
 #: build/editor.js:1952
 #: client/classic-editor/index.js:110
-#: client/editor/save-button.js:68
-#: client/editor/save-button.js:91
+#: client/editor/save-button.js:65
+#: client/editor/save-button.js:88
 #: build/classic-editor.js:161
-#: build/editor.js:1486
-#: build/editor.js:1509
+#: build/editor.js:1483
+#: build/editor.js:1506
 msgid "Save"
 msgstr ""
 
@@ -100,112 +100,112 @@ msgid "Publish"
 msgstr ""
 
 #: build/editor.js:2059
-#: client/editor/status-selector.js:52
-#: build/editor.js:1633
+#: client/editor/status-selector.js:49
+#: build/editor.js:1627
 msgid "Added to your publishing queue."
 msgstr ""
 
 #: build/settings-panel.js:461
 #: client/settings-panel/index.js:69
-#: build/settings-panel.js:296
+#: build/settings-panel.js:295
 msgid "The start time must be before end time."
 msgstr ""
 
 #: build/settings-panel.js:474
 #: client/settings-panel/index.js:87
-#: build/settings-panel.js:314
+#: build/settings-panel.js:313
 msgid "Failed to save settings. Please try again."
 msgstr ""
 
 #: build/settings-panel.js:484
-#: client/settings-panel/index.js:103
-#: build/settings-panel.js:330
+#: client/settings-panel/index.js:100
+#: build/settings-panel.js:326
 msgid "Failed to pause the queue. Please try again."
 msgstr ""
 
 #: build/settings-panel.js:503
-#: client/settings-panel/index.js:128
-#: build/settings-panel.js:355
+#: client/settings-panel/index.js:125
+#: build/settings-panel.js:351
 msgid "Failed to resume the queue. Please try again."
 msgstr ""
 
 #: build/settings-panel.js:543
-#: client/settings-panel/index.js:179
-#: build/settings-panel.js:406
+#: client/settings-panel/index.js:176
+#: build/settings-panel.js:402
 msgid "N/A"
 msgstr ""
 
 #: build/settings-panel.js:549
-#: client/settings-panel/index.js:186
-#: build/settings-panel.js:413
+#: client/settings-panel/index.js:183
+#: build/settings-panel.js:409
 msgid "The queue lets you stagger posts over a period of hours or days. It's an easy way to keep your blog active and consistent."
 msgstr ""
 
 #: build/settings-panel.js:553
-#: client/settings-panel/index.js:194
-#: build/settings-panel.js:421
+#: client/settings-panel/index.js:191
+#: build/settings-panel.js:417
 msgctxt "Part of the sentence: \"Automatically publish a queued post ___ times a day between ____ and ____\""
 msgid "Automatically publish a queued post"
 msgstr ""
 
 #: build/settings-panel.js:563
-#: client/settings-panel/index.js:207
-#: build/settings-panel.js:434
+#: client/settings-panel/index.js:204
+#: build/settings-panel.js:430
 msgctxt "Part of the sentence: \"Automatically publish a queued post ___ times a day between ____ and ____\""
 msgid "times a day between"
 msgstr ""
 
 #: build/settings-panel.js:571
-#: client/settings-panel/index.js:242
-#: build/settings-panel.js:469
+#: client/settings-panel/index.js:239
+#: build/settings-panel.js:465
 msgctxt "Part of the sentence: \"Automatically publish a queued post ___ times a day between ____ and ____\""
 msgid "and"
 msgstr ""
 
 #: build/settings-panel.js:585
-#: client/settings-panel/index.js:288
-#: build/settings-panel.js:515
+#: client/settings-panel/index.js:285
+#: build/settings-panel.js:511
 msgid "Timezone:"
 msgstr ""
 
 #: build/settings-panel.js:587
-#: client/settings-panel/index.js:295
-#: build/settings-panel.js:522
+#: client/settings-panel/index.js:292
+#: build/settings-panel.js:518
 msgid "change"
 msgstr ""
 
 #: build/settings-panel.js:588
-#: client/settings-panel/index.js:299
-#: build/settings-panel.js:526
+#: client/settings-panel/index.js:296
+#: build/settings-panel.js:522
 msgid "Local Time:"
 msgstr ""
 
 #: build/settings-panel.js:594
-#: client/settings-panel/index.js:304
-#: build/settings-panel.js:531
+#: client/settings-panel/index.js:301
+#: build/settings-panel.js:527
 msgid "Shuffle Queue"
 msgstr ""
 
 #: build/settings-panel.js:598
-#: client/settings-panel/index.js:308
-#: build/settings-panel.js:535
+#: client/settings-panel/index.js:305
+#: build/settings-panel.js:531
 msgid "Pause Queue"
 msgstr ""
 
 #: build/settings-panel.js:602
-#: client/settings-panel/index.js:313
-#: build/settings-panel.js:540
+#: client/settings-panel/index.js:310
+#: build/settings-panel.js:536
 msgid "Save Changes"
 msgstr ""
 
 #: build/settings-panel.js:609
-#: client/settings-panel/index.js:325
-#: build/settings-panel.js:552
+#: client/settings-panel/index.js:322
+#: build/settings-panel.js:548
 msgid "Your queue is currently paused. No queued posts will be published at this time. Scheduled posts, however, will still be published. Once the queue is un-paused, queued posts will be re-calculated and resume publication."
 msgstr ""
 
 #: build/settings-panel.js:613
-#: client/settings-panel/index.js:331
-#: build/settings-panel.js:558
+#: client/settings-panel/index.js:328
+#: build/settings-panel.js:554
 msgid "Resume Queue"
 msgstr ""

@@ -66,7 +66,7 @@ const SettingsPanel = ( {
 
 		if ( startHour >= endHour ) {
 			setError(
-				__( 'The start time must be before end time.', 'wp-post-queue' )
+				__( 'The start time must be before end time.', 'post-queue' )
 			);
 			return;
 		}
@@ -84,10 +84,7 @@ const SettingsPanel = ( {
 			setIsDirty( false );
 		} catch ( saveError ) {
 			setError(
-				__(
-					'Failed to save settings. Please try again.',
-					'wp-post-queue'
-				)
+				__( 'Failed to save settings. Please try again.', 'post-queue' )
 			);
 		}
 	};
@@ -102,7 +99,7 @@ const SettingsPanel = ( {
 			setError(
 				__(
 					'Failed to pause the queue. Please try again.',
-					'wp-post-queue'
+					'post-queue'
 				)
 			);
 		}
@@ -127,7 +124,7 @@ const SettingsPanel = ( {
 			setError(
 				__(
 					'Failed to resume the queue. Please try again.',
-					'wp-post-queue'
+					'post-queue'
 				)
 			);
 			setIsLoading( false );
@@ -176,7 +173,7 @@ const SettingsPanel = ( {
 			return localTime.toLocaleString();
 		} catch ( _error ) {
 			console.error( 'Error getting local date and time:', _error );
-			return __( 'N/A', 'wp-post-queue' );
+			return __( 'N/A', 'post-queue' );
 		}
 	};
 
@@ -185,7 +182,7 @@ const SettingsPanel = ( {
 			<p>
 				{ __(
 					"The queue lets you stagger posts over a period of hours or days. It's an easy way to keep your blog active and consistent.",
-					'wp-post-queue'
+					'post-queue'
 				) }
 			</p>
 
@@ -194,7 +191,7 @@ const SettingsPanel = ( {
 					label={ _x(
 						'Automatically publish a queued post',
 						'Part of the sentence: "Automatically publish a queued post ___ times a day between ____ and ____"',
-						'wp-post-queue'
+						'post-queue'
 					) }
 					value={ localPublishTimes }
 					options={ Array.from( { length: 50 }, ( _, i ) => ( {
@@ -207,7 +204,7 @@ const SettingsPanel = ( {
 					label={ _x(
 						'times a day between',
 						'Part of the sentence: "Automatically publish a queued post ___ times a day between ____ and ____"',
-						'wp-post-queue'
+						'post-queue'
 					) }
 					value={ localStartTime }
 					options={ [
@@ -242,7 +239,7 @@ const SettingsPanel = ( {
 					label={ _x(
 						'and',
 						'Part of the sentence: "Automatically publish a queued post ___ times a day between ____ and ____"',
-						'wp-post-queue'
+						'post-queue'
 					) }
 					value={ localEndTime }
 					options={ [
@@ -285,32 +282,32 @@ const SettingsPanel = ( {
 			) }
 
 			<p>
-				{ __( 'Timezone:', 'wp-post-queue' ) }{ ' ' }
+				{ __( 'Timezone:', 'post-queue' ) }{ ' ' }
 				{ getTimezoneDisplay(
 					wpQueuePluginData.timezone,
 					wpQueuePluginData.gmtOffset
 				) }{ ' ' }
 				(
 				<a href={ wpQueuePluginData.settingsUrl }>
-					{ __( 'change', 'wp-post-queue' ) }
+					{ __( 'change', 'post-queue' ) }
 				</a>
 				)
 				<br />
-				{ __( 'Local Time:', 'wp-post-queue' ) }{ ' ' }
+				{ __( 'Local Time:', 'post-queue' ) }{ ' ' }
 				{ getLocalDateTime( wpQueuePluginData.gmtOffset ) }
 			</p>
 			<div className="settings-actions">
 				<Button isSecondary onClick={ shuffleQueue }>
-					{ __( 'Shuffle Queue', 'wp-post-queue' ) }
+					{ __( 'Shuffle Queue', 'post-queue' ) }
 				</Button>
 				{ ! isPaused && (
 					<Button isSecondary onClick={ handlePause }>
-						{ __( 'Pause Queue', 'wp-post-queue' ) }
+						{ __( 'Pause Queue', 'post-queue' ) }
 					</Button>
 				) }
 				{ isDirty && (
 					<Button isPrimary onClick={ handleSave }>
-						{ __( 'Save Changes', 'wp-post-queue' ) }
+						{ __( 'Save Changes', 'post-queue' ) }
 					</Button>
 				) }
 				{ isLoading && <Spinner /> }
@@ -324,11 +321,11 @@ const SettingsPanel = ( {
 					<p>
 						{ __(
 							'Your queue is currently paused. No queued posts will be published at this time. Scheduled posts, however, will still be published. Once the queue is un-paused, queued posts will be re-calculated and resume publication.',
-							'wp-post-queue'
+							'post-queue'
 						) }
 					</p>
 					<Button isPrimary onClick={ handleResume }>
-						{ __( 'Resume Queue', 'wp-post-queue' ) }
+						{ __( 'Resume Queue', 'post-queue' ) }
 					</Button>
 				</Notice>
 			) }

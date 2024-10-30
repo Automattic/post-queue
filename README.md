@@ -1,4 +1,4 @@
-# WP Post Queue
+# Post Queue for WordPress
 
 This plugin is designed to help you manage and schedule your blog posts efficiently. It allows you to configure the number of posts to publish per day, set start and end times for publishing, and pause or resume the queue as needed.
 

@@ -313,7 +313,7 @@ class Manager {
 				'new_publish_time' => gmdate( 'Y-m-d H:i:s', $new_publish_time ),
 				'date_column'      => sprintf(
 					// translators: %1$s is the date, %2$s is the time.
-					__( '%1$s at %2$s', 'wp-post-queue' ),
+					__( '%1$s at %2$s', 'post-queue' ),
 					date_i18n( 'Y/m/d', $new_publish_time ),
 					date_i18n( 'g:i a', $new_publish_time )
 				),

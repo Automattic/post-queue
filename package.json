@@ -1,5 +1,5 @@
 {
-  "name": "wp-post-queue",
+  "name": "post-queue",
   "version": "0.2.1",
   "scripts": {
     "build": "wp-scripts build",

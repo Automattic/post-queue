@@ -8,7 +8,7 @@
     convertWarningsToExceptions="true"
 >
     <testsuites>
-        <testsuite name="WP Post Queue Tests">
+        <testsuite name="Post Queue Tests">
             <directory suffix="-test.php">./tests/</directory>
         </testsuite>
     </testsuites>
