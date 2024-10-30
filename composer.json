@@ -1,5 +1,5 @@
 {
-    "name": "automattic/wp-post-queue",
+    "name": "automattic/post-queue",
     "type": "wordpress-plugin",
     "description": "A WordPress plugin designed to help you manage and schedule your blog posts efficiently. It allows you to configure the number of posts to publish per day, set start and end times for publishing, and pause or resume the queue as needed.",
     "license": "GPL-2.0-or-later",
@@ -41,7 +41,7 @@
             "@makejson"
         ],
         "makepot": "wp i18n make-pot .",
-        "updatepo": "wp i18n update-po ./languages/wp-post-queue.pot",
+        "updatepo": "wp i18n update-po ./languages/post-queue.pot",
         "makejson": "wp i18n make-json ./languages --pretty-print --no-purge",
         "makemo": "wp i18n make-mo ./languages",
         "packages-install": "@composer install --ignore-platform-reqs --no-interaction",

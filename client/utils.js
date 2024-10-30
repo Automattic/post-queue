@@ -33,10 +33,9 @@ export const updateTable = ( updatedPosts ) => {
 		if ( row ) {
 			const dateCell = row.querySelector( '.column-date' );
 			if ( dateCell ) {
-				dateCell.innerHTML = `${ __(
-					'Queued',
-					'wp-post-queue'
-				) }<br />${ post.date_column }`;
+				dateCell.innerHTML = `${ __( 'Queued', 'post-queue' ) }<br />${
+					post.date_column
+				}`;
 			}
 			// Reorder the row in the table
 			table.appendChild( row );

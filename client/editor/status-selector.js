@@ -45,13 +45,10 @@ const QueueEditorPanel = ( { onUpdateQueuedStatus } ) => {
 				input.id = `inspector-radio-control-0-${ options.length }`;
 				input.value = 'queued';
 				label.setAttribute( 'for', input.id );
-				label.childNodes[ 0 ].nodeValue = __(
-					'Queued',
-					'wp-post-queue'
-				);
+				label.childNodes[ 0 ].nodeValue = __( 'Queued', 'post-queue' );
 				span.textContent = __(
 					'Added to your publishing queue.',
-					'wp-post-queue'
+					'post-queue'
 				);
 				input.checked = currentStatusRef.current === 'queued';
 				input.removeAttribute( 'name' );
@@ -109,10 +106,7 @@ const QueueEditorPanel = ( { onUpdateQueuedStatus } ) => {
 			currentStatusRef.current = postStatus;
 			if ( isPostQueued ) {
 				setTimeout( () => {
-					postStatusButton.textContent = __(
-						'Queued',
-						'wp-post-queue'
-					);
+					postStatusButton.textContent = __( 'Queued', 'post-queue' );
 				}, 100 );
 			} else {
 				postStatusButton.textContent = '';
@@ -147,7 +141,7 @@ const EnhancedQueuePluginPanel = compose(
 	withDispatch( mapDispatchToProps )
 )( QueueEditorPanel );
 
-registerPlugin( 'wp-post-queue', {
+registerPlugin( 'post-queue', {
 	render: EnhancedQueuePluginPanel,
 	icon: 'calendar',
 } );

@@ -73,7 +73,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 const addQueuedStatusOption = ( selectElement ) => {
 	const queuedOption = document.createElement( 'option' );
 	queuedOption.value = 'queued';
-	queuedOption.textContent = __( 'Queued', 'wp-post-queue' );
+	queuedOption.textContent = __( 'Queued', 'post-queue' );
 
 	// Append the "Queued" option to the dropdown
 	selectElement.appendChild( queuedOption );
@@ -107,8 +107,8 @@ const updatePublishButton = ( text ) => {
 	if ( publishButton ) {
 		const label =
 			text === 'Save'
-				? __( 'Save', 'wp-post-queue' )
-				: __( 'Queue', 'wp-post-queue' );
+				? __( 'Save', 'post-queue' )
+				: __( 'Queue', 'post-queue' );
 		publishButton.value = label;
 		publishButton.name = 'save';
 	}
@@ -130,7 +130,7 @@ const updateTimestampDisplay = async ( postStatusSelect ) => {
 			if ( timestampElement ) {
 				timestampElement.innerHTML = sprintf(
 					/* translators: %s: The scheduled time. */
-					__( 'Schedule for: <b>%s</b>', 'wp-post-queue' ),
+					__( 'Schedule for: <b>%s</b>', 'post-queue' ),
 					queuedTime
 				);
 			}

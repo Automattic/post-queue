@@ -64,14 +64,14 @@ class Admin {
 		register_post_status(
 			'queued',
 			array(
-				'label'                     => __( 'Queued', 'wp-post-queue' ),
+				'label'                     => __( 'Queued', 'post-queue' ),
 				'public'                    => false,
 				'private'                   => true,
 				'exclude_from_search'       => true,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 				// translators: %s is the number of posts.
-				'label_count'               => _n_noop( 'Queued <span class="count">(%s)</span>', 'Queued <span class="count">(%s)</span>', 'wp-post-queue' ),
+				'label_count'               => _n_noop( 'Queued <span class="count">(%s)</span>', 'Queued <span class="count">(%s)</span>', 'post-queue' ),
 			)
 		);
 	}
@@ -297,8 +297,8 @@ class Admin {
 	public function add_queue_menu_item() {
 		add_submenu_page(
 			'edit.php',
-			__( 'Queue', 'wp-post-queue' ),
-			__( 'Queue', 'wp-post-queue' ),
+			__( 'Queue', 'post-queue' ),
+			__( 'Queue', 'post-queue' ),
 			'edit_posts',
 			'edit.php?post_status=queued&post_type=post'
 		);
@@ -335,8 +335,8 @@ class Admin {
 		global $pagenow, $post_type;
 
 		if ( 'edit.php' === $pagenow && 'queued' === get_query_var( 'post_status' ) ) {
-			$labels->name          = __( 'Queue', 'wp-post-queue' );
-			$labels->singular_name = __( 'Queue', 'wp-post-queue' );
+			$labels->name          = __( 'Queue', 'post-queue' );
+			$labels->singular_name = __( 'Queue', 'post-queue' );
 		}
 
 		return $labels;
@@ -382,7 +382,7 @@ class Admin {
 	 */
 	public function display_post_states( $post_states, $post ) {
 		if ( get_post_status( $post->ID ) === 'queued' ) {
-			$post_states[] = __( 'Queued', 'wp-post-queue' );
+			$post_states[] = __( 'Queued', 'post-queue' );
 		}
 		return $post_states;
 	}
@@ -399,7 +399,7 @@ class Admin {
 	 */
 	public function post_date_column_status( $status, $post, $column_name, $mode ) {
 		if ( 'queued' === $post->post_status ) {
-			$status = __( 'Queued', 'wp-post-queue' );
+			$status = __( 'Queued', 'post-queue' );
 		}
 		return $status;
 	}
