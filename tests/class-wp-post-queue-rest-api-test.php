@@ -229,4 +229,25 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 			$this->assertEquals( $status, $data['status'] );
 		}
 	}
+
+	/**
+	 * Test the get_next_queue_time method returns the correct next queue time.
+	 *
+	 * @return void
+	 */
+	public function test_get_next_queue_time() {
+		// Create a post with 'queued' status
+		$post_id = $this->factory->post->create( array( 'post_status' => 'queued' ) );
+
+		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/recalculate' );
+		$request->set_param( 'order', array( $post_id ) );
+		rest_do_request( $request );
+
+		// Get the next queue time
+		$request  = new WP_REST_Request( 'GET', '/wp-post-queue/v1/next-queue-time' );
+		$response = rest_do_request( $request );
+
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'nextQueueTime', $data );
+	}
 }

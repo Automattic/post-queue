@@ -565,6 +565,66 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test the get_next_queue_time method returns the correct next queue time.
+	 *
+	 * @return void
+	 */
+	public function test_get_next_queue_time() {
+		$this->manager = $this->getMockBuilder( Manager::class )
+			->setConstructorArgs( array( $this->settings ) )
+			->onlyMethods( array( 'get_current_time', 'get_current_date' ) )
+			->getMock();
+
+		$current_time = strtotime( '10/24/2024 00:00:00' );
+		$this->manager->method( 'get_current_time' )
+			->willReturn( $current_time );
+
+		$current_date = new \DateTime( '10/24/2024 00:00:00', new \DateTimeZone( 'UTC' ) );
+		$this->manager->method( 'get_current_date' )
+			->willReturn( $current_date );
+
+		$post_ids = array(
+			$this->factory->post->create(
+				array(
+					'post_status'   => 'queued',
+					'post_date'     => '2024-10-24 00:20:00',
+					'post_date_gmt' => get_gmt_from_date( '2024-10-24 00:20:00' ),
+				)
+			),
+			$this->factory->post->create(
+				array(
+					'post_status' => 'queued',
+				)
+			),
+		);
+
+		// Set the post dates in the past
+		$past_date_1 = '2024-10-24 00:20:00';
+		$past_date_2 = '2024-10-24 00:40:00';
+
+		wp_update_post(
+			array(
+				'ID'            => $post_ids[0],
+				'post_date'     => $past_date_1,
+				'post_date_gmt' => get_gmt_from_date( $past_date_1 ),
+			)
+		);
+
+		wp_update_post(
+			array(
+				'ID'            => $post_ids[1],
+				'post_date'     => $past_date_2,
+				'post_date_gmt' => get_gmt_from_date( $past_date_2 ),
+			)
+		);
+
+		$expected_next_queue_time = 'Oct 25, 2024 at 00:20';
+		$actual_next_queue_time   = $this->manager->get_next_queue_time();
+		$this->assertNotEmpty( $actual_next_queue_time );
+		$this->assertEquals( $expected_next_queue_time, $actual_next_queue_time );
+	}
+
+	/**
 	 * Helper method to invoke private or protected methods.
 	 *
 	 * @param object $instance    The object to invoke the method on.

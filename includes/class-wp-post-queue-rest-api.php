@@ -158,6 +158,18 @@ class REST_API {
 				},
 			)
 		);
+
+		register_rest_route(
+			'wp-post-queue/v1',
+			'/next-queue-time',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_next_queue_time' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
 	}
 
 	/**
@@ -267,5 +279,17 @@ class REST_API {
 		$new_order = $manager->shuffle_queued_posts();
 
 		return new \WP_REST_Response( $new_order, 200 );
+	}
+
+	/**
+	 * Get the next estimated queue time.
+	 *
+	 * @return \WP_REST_Response The next queue time.
+	 */
+	public function get_next_queue_time() {
+		$queue_manager   = new Manager( $this->settings );
+		$next_queue_time = $queue_manager->get_next_queue_time();
+
+		return new \WP_REST_Response( array( 'nextQueueTime' => $next_queue_time ), 200 );
 	}
 }

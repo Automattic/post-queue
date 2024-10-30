@@ -49,6 +49,14 @@ class Manager {
 		} elseif ( 'queued' === $old_status && 'queued' !== $new_status && 'publish' !== $new_status ) {
 			$this->remove_scheduled_event( $post->ID );
 
+			// Reset the post's scheduled time
+			$post_data = array(
+				'ID'            => $post->ID,
+				'post_date'     => current_time( 'mysql' ),
+				'post_date_gmt' => get_gmt_from_date( current_time( 'mysql' ) ),
+			);
+			wp_update_post( $post_data );
+
 			$current_queue = $this->get_current_order();
 			$this->recalculate_publish_times( array_column( $current_queue, 'ID' ) );
 		}
@@ -380,5 +388,27 @@ class Manager {
 	public function resume_queue() {
 		$queued_posts = $this->get_current_order();
 		$this->recalculate_publish_times( array_column( $queued_posts, 'ID' ) );
+	}
+	/**
+	 * Gets the next estimated queue time for the last post in the queue.
+	 *
+	 * @return string The next queue time in a human-readable format.
+	 */
+	public function get_next_queue_time() {
+		$current_queue = $this->get_current_order();
+
+		// Check if the queue is empty
+		if ( empty( $current_queue ) ) {
+			$index             = 0;
+			$last_publish_time = null;
+		} else {
+			$last_post         = end( $current_queue );
+			$index             = count( $current_queue ) - 1;
+			$last_publish_time = strtotime( $last_post['post_date'] );
+		}
+
+		$next_publish_time = $this->calculate_next_publish_time( $index, $last_publish_time );
+
+		return date_i18n( 'M j, Y \a\t H:i', $next_publish_time );
 	}
 }
