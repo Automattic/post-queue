@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: WordPress Post Queue
+ * Plugin Name: WP Post Queue
  * Description: A plugin to add a Tumblr-like queue feature for WordPress posts.
  * Version: 0.2.0
  * Author: Automattic
