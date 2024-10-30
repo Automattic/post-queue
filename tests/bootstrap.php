@@ -31,7 +31,7 @@ require_once "{$_tests_dir}/includes/functions.php";
  * @return void
  */
 function _manually_load_plugin() {
-	require dirname( __DIR__ ) . '/wp-post-queue.php';
+	require dirname( __DIR__ ) . '/post-queue.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
