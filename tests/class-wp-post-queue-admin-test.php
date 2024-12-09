@@ -1,12 +1,12 @@
 <?php
 
-use WP_Post_Queue\Admin;
+use Post_Queue\Admin;
 
 /**
  * Test the Admin class.
  * Which is responsible for the admin UI side of the plugin.
  */
-class Test_WP_Post_Queue_Admin extends WP_UnitTestCase {
+class Test_Post_Queue_Admin extends WP_UnitTestCase {
 	private $admin;
 	private $settings;
 
@@ -18,10 +18,10 @@ class Test_WP_Post_Queue_Admin extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->settings = array(
-			'publishTimes'  => 2,
-			'startTime'     => '12 am',
-			'endTime'       => '1 am',
-			'wpQueuePaused' => false,
+			'publishTimes'    => 2,
+			'startTime'       => '12 am',
+			'endTime'         => '1 am',
+			'postQueuePaused' => false,
 		);
 		$this->admin    = new Admin( $this->settings );
 	}
@@ -109,16 +109,16 @@ class Test_WP_Post_Queue_Admin extends WP_UnitTestCase {
 
 	/**
 	 * Test the registration of settings.
-	 * The settings "wp_queue_publish_times", "wp_queue_start_time", "wp_queue_end_time", and "wp_queue_paused" should be registered.
+	 * The settings "post_queue_publish_times", "post_queue_start_time", "post_queue_end_time", and "post_queue_paused" should be registered.
 	 *
 	 * @return void
 	 */
 	public function test_register_settings() {
 		$this->admin->register_settings();
-		$this->assertNotNull( get_option( 'wp_queue_publish_times' ), 'The setting "wp_queue_publish_times" should be registered.' );
-		$this->assertNotNull( get_option( 'wp_queue_start_time' ), 'The setting "wp_queue_start_time" should be registered.' );
-		$this->assertNotNull( get_option( 'wp_queue_end_time' ), 'The setting "wp_queue_end_time" should be registered.' );
-		$this->assertNotNull( get_option( 'wp_queue_paused' ), 'The setting "wp_queue_paused" should be registered.' );
+		$this->assertNotNull( get_option( 'post_queue_publish_times' ), 'The setting "post_queue_publish_times" should be registered.' );
+		$this->assertNotNull( get_option( 'post_queue_start_time' ), 'The setting "post_queue_start_time" should be registered.' );
+		$this->assertNotNull( get_option( 'post_queue_end_time' ), 'The setting "post_queue_end_time" should be registered.' );
+		$this->assertNotNull( get_option( 'post_queue_paused' ), 'The setting "post_queue_paused" should be registered.' );
 	}
 
 	/**

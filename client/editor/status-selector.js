@@ -40,13 +40,15 @@ const QueueEditorPanel = ( { onUpdateQueuedStatus } ) => {
 				const queuedOption = lastOption.cloneNode( true );
 				const input = queuedOption.querySelector( 'input' );
 				const label = queuedOption.querySelector( 'label' );
-				const span = queuedOption.querySelector( 'span' );
+				const description =
+					queuedOption.querySelector( 'span' ) ||
+					queuedOption.querySelector( 'p' );
 
 				input.id = `inspector-radio-control-0-${ options.length }`;
 				input.value = 'queued';
 				label.setAttribute( 'for', input.id );
 				label.childNodes[ 0 ].nodeValue = __( 'Queued', 'post-queue' );
-				span.textContent = __(
+				description.textContent = __(
 					'Added to your publishing queue.',
 					'post-queue'
 				);

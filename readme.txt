@@ -2,8 +2,8 @@
 Contributors: automattic, jshreve
 Tags: post queue, post scheduler
 Requires at least: 6.0
-Tested up to: 6.6
-Stable tag: 0.2.1
+Tested up to: 6.7
+Stable tag: 0.2.2
 Requires PHP: 7.0
 License: GPLv2 or later
 Text Domain: post-queue
@@ -39,7 +39,16 @@ Unlike scheduled posts, queued posts are not published at user-specific times, b
 - Click "Shuffle Queue" to randomize the order of posts.
 - Add new posts to the queue by selecting "Queued" under the post status and visibility dropdown in the editor.
 
+== Source Code and Development ==
+
+The source code for the Post Queue plugin is publicly available and maintained on GitHub. [Post Queue GitHub Repository](https://github.com/Automattic/post-queue).
+
+This repository includes all the necessary build tools and documentation on how to use them. We encourage developers to explore and contribute to the project!
+
 == Changelog ==
+
+= 0.2.2 =
+* Cleaned up code and verified compatibility with WordPress 6.7.
 
 = 0.2.1 =
 * Initial release with core features for post queue management.

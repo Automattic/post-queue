@@ -2,16 +2,16 @@ import apiFetch from '@wordpress/api-fetch';
 import { createReduxStore, register } from '@wordpress/data';
 
 /**
- * Redux store for managing the settings of the WP Post Queue plugin.
+ * Redux store for managing the settings of the Post Queue plugin.
  * This store handles the state and actions related to publish times, start time, end time, and queue paused status.
  * It also includes a generator function for saving settings via an API call.
  */
 
 const DEFAULT_STATE = {
-	publishTimes: wpQueuePluginData.publishTimes,
-	startTime: wpQueuePluginData.startTime,
-	endTime: wpQueuePluginData.endTime,
-	wpQueuePaused: wpQueuePluginData.wpQueuePaused,
+	publishTimes: postQueuePluginData.publishTimes,
+	startTime: postQueuePluginData.startTime,
+	endTime: postQueuePluginData.endTime,
+	postQueuePaused: postQueuePluginData.postQueuePaused,
 };
 
 const actions = {
@@ -33,10 +33,10 @@ const actions = {
 			endTime,
 		};
 	},
-	setWpQueuePaused( wpQueuePaused ) {
+	setPostQueuePaused( postQueuePaused ) {
 		return {
-			type: 'SET_WP_QUEUE_PAUSED',
-			wpQueuePaused,
+			type: 'SET_POST_QUEUE_PAUSED',
+			postQueuePaused,
 		};
 	},
 	receiveSettings( settings ) {
@@ -66,8 +66,8 @@ const reducer = ( state = DEFAULT_STATE, action ) => {
 			return { ...state, endTime: action.endTime };
 		case 'RECEIVE_SETTINGS':
 			return { ...state, ...action.settings };
-		case 'SET_WP_QUEUE_PAUSED':
-			return { ...state, wpQueuePaused: action.wpQueuePaused };
+		case 'SET_POST_QUEUE_PAUSED':
+			return { ...state, postQueuePaused: action.postQueuePaused };
 		default:
 			return state;
 	}
@@ -81,11 +81,11 @@ const selectors = {
 
 const controls = {
 	FETCH_SETTINGS() {
-		return apiFetch( { path: '/wp-post-queue/v1/settings' } );
+		return apiFetch( { path: '/post-queue/v1/settings' } );
 	},
 	UPDATE_SETTINGS( payload ) {
 		return apiFetch( {
-			path: '/wp-post-queue/v1/settings',
+			path: '/post-queue/v1/settings',
 			method: 'POST',
 			data: payload,
 		} )
@@ -108,7 +108,7 @@ const resolvers = {
 		},
 };
 
-const store = createReduxStore( 'wp-post-queue/store', {
+const store = createReduxStore( 'post-queue/store', {
 	reducer,
 	actions,
 	selectors,

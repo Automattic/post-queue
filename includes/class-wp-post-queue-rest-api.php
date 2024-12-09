@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Post_Queue;
+namespace Post_Queue;
 
 /**
  * This class is responsible for the REST API side of the plugin.
@@ -65,7 +65,7 @@ class REST_API {
 	 */
 	public function register_rest_routes() {
 		register_rest_route(
-			'wp-post-queue/v1',
+			'post-queue/v1',
 			'/settings',
 			array(
 				'methods'             => 'GET',
@@ -77,7 +77,7 @@ class REST_API {
 		);
 
 		register_rest_route(
-			'wp-post-queue/v1',
+			'post-queue/v1',
 			'/settings',
 			array(
 				'methods'             => 'POST',
@@ -107,7 +107,7 @@ class REST_API {
 							return is_string( $param ) && in_array( $param, $this->valid_times, true );
 						},
 					),
-					'wp_queue_paused' => array(
+					'post_queue_paused' => array(
 						'required'          => false,
 						'type'              => 'boolean',
 						'validate_callback' => function ( $param, $request, $key ) {
@@ -119,7 +119,7 @@ class REST_API {
 		);
 
 		register_rest_route(
-			'wp-post-queue/v1',
+			'post-queue/v1',
 			'/recalculate',
 			array(
 				'methods'             => 'POST',
@@ -148,7 +148,7 @@ class REST_API {
 		);
 
 		register_rest_route(
-			'wp-post-queue/v1',
+			'post-queue/v1',
 			'/shuffle',
 			array(
 				'methods'             => 'POST',
@@ -160,7 +160,7 @@ class REST_API {
 		);
 
 		register_rest_route(
-			'wp-post-queue/v1',
+			'post-queue/v1',
 			'/next-queue-time',
 			array(
 				'methods'             => 'GET',
@@ -184,13 +184,13 @@ class REST_API {
 	/**
 	 * Update the settings for the queue.
 	 *
-	 * Endpoint: /wp-post-queue/v1/settings
+	 * Endpoint: /post-queue/v1/settings
 	 * Method: POST
 	 * Params:
 	 * - publish_times: int
 	 * - start_time: string
 	 * - end_time: string
-	 * - wp_queue_paused: bool
+	 * - post_queue_paused: bool
 	 *
 	 * If the queue is paused, it will be resumed and vice versa.
 	 * When settings are updated, the queue is recalculated and the publish times are updated.
@@ -203,34 +203,34 @@ class REST_API {
 		$publish_times = $request->get_param( 'publish_times' );
 		$start_time    = $request->get_param( 'start_time' );
 		$end_time      = $request->get_param( 'end_time' );
-		$queue_paused  = $request->get_param( 'wp_queue_paused' );
+		$queue_paused  = $request->get_param( 'post_queue_paused' );
 
 		$current_settings = $this->settings;
 
 		if ( null !== $publish_times ) {
-			update_option( 'wp_queue_publish_times', $publish_times );
+			update_option( 'post_queue_publish_times', $publish_times );
 		}
 		if ( null !== $start_time ) {
-			update_option( 'wp_queue_start_time', $start_time );
+			update_option( 'post_queue_start_time', $start_time );
 		}
 		if ( null !== $end_time ) {
-			update_option( 'wp_queue_end_time', $end_time );
+			update_option( 'post_queue_end_time', $end_time );
 		}
 		if ( null !== $queue_paused ) {
-			update_option( 'wp_queue_paused', $queue_paused );
+			update_option( 'post_queue_paused', $queue_paused );
 		}
 
 		$this->settings = array(
-			'publishTimes'  => get_option( 'wp_queue_publish_times' ),
-			'startTime'     => get_option( 'wp_queue_start_time' ),
-			'endTime'       => get_option( 'wp_queue_end_time' ),
-			'wpQueuePaused' => get_option( 'wp_queue_paused' ),
+			'publishTimes'    => get_option( 'post_queue_publish_times' ),
+			'startTime'       => get_option( 'post_queue_start_time' ),
+			'endTime'         => get_option( 'post_queue_end_time' ),
+			'postQueuePaused' => get_option( 'post_queue_paused' ),
 		);
 
 		$queue_manager = new Manager( $this->settings );
 
 		// Only execute pause/resume if the setting has changed
-		if ( null !== $queue_paused && $queue_paused !== $current_settings['wpQueuePaused'] ) {
+		if ( null !== $queue_paused && $queue_paused !== $current_settings['postQueuePaused'] ) {
 			if ( $queue_paused ) {
 				$queue_manager->pause_queue();
 			} else {
@@ -248,7 +248,7 @@ class REST_API {
 	/**
 	 * Recalculate the publish times for all posts in the queue.
 	 *
-	 * Endpoint: /wp-post-queue/v1/recalculate
+	 * Endpoint: /post-queue/v1/recalculate
 	 * Method: POST
 	 * Params:
 	 * - order: array of post IDs
@@ -269,7 +269,7 @@ class REST_API {
 	/**
 	 * Shuffle the queue of posts.
 	 *
-	 * Endpoint: /wp-post-queue/v1/shuffle
+	 * Endpoint: /post-queue/v1/shuffle
 	 * Method: POST
 	 *
 	 * @return array The new order of the posts.
