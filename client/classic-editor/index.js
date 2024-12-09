@@ -60,7 +60,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	updatePublishButton();
 	updatePostStatusDisplay( postStatusSelect );
 
-	if ( wpQueuePluginData.isNewPost ) {
+	if ( postQueuePluginData.isNewPost ) {
 		updateTimestampDisplay( postStatusSelect );
 	}
 } );
@@ -122,7 +122,7 @@ const updatePublishButton = ( text ) => {
 const updateTimestampDisplay = async ( postStatusSelect ) => {
 	if ( postStatusSelect.value === 'queued' ) {
 		let queuedTime = document.querySelector( '#timestamp b' ).textContent;
-		if ( wpQueuePluginData.isNewPost ) {
+		if ( postQueuePluginData.isNewPost ) {
 			queuedTime = await fetchNextQueueTime();
 		}
 		if ( queuedTime ) {
@@ -146,7 +146,7 @@ const updateTimestampDisplay = async ( postStatusSelect ) => {
 const fetchNextQueueTime = async () => {
 	try {
 		const data = await apiFetch( {
-			path: '/wp-post-queue/v1/next-queue-time',
+			path: '/post-queue/v1/next-queue-time',
 		} );
 		return data.nextQueueTime;
 	} catch ( error ) {

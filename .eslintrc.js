@@ -6,7 +6,7 @@ module.exports = {
 		'jsdoc/require-param-type': 'off',
 	},
 	globals: {
-		wpQueuePluginData: 'readonly',
-		wpQueuePluginPostListData: 'readonly',
+		postQueuePluginData: 'readonly',
+		postQueuePluginPostListData: 'readonly',
 	},
 };

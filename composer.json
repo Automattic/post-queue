@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "WP_Post_Queue\\": "includes/"
+            "Post_Queue\\": "includes/"
         }
     },
     "config": {

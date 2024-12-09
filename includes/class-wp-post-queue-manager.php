@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Post_Queue;
+namespace Post_Queue;
 
 /**
  * Manages the post queue for scheduling and publishing posts in WordPress.
@@ -177,7 +177,7 @@ class Manager {
 		wp_update_post( $post_data );
 
 		// Only schedule the post if the queue is not paused
-		if ( ! $this->settings['wpQueuePaused'] ) {
+		if ( ! $this->settings['postQueuePaused'] ) {
 			$this->schedule_queued_post( $post_id, $next_publish_time );
 		}
 	}
@@ -205,7 +205,7 @@ class Manager {
 	 * @return void
 	 */
 	public function publish_post_now( $post_id ) {
-		if ( $this->settings['wpQueuePaused'] ) {
+		if ( $this->settings['postQueuePaused'] ) {
 			return; // Exit if the queue is paused
 		}
 		$post_data = array(
@@ -294,7 +294,7 @@ class Manager {
 			$new_publish_time  = $this->calculate_next_publish_time( $index, $last_publish_time, $gmt_offset );
 			$last_publish_time = $new_publish_time;
 
-			if ( ! $this->settings['wpQueuePaused'] ) {
+			if ( ! $this->settings['postQueuePaused'] ) {
 				$this->update_scheduled_event( $post->ID, $new_publish_time );
 			}
 
@@ -304,7 +304,7 @@ class Manager {
 				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $new_publish_time ),
 			);
 
-			if ( ! $this->settings['wpQueuePaused'] ) {
+			if ( ! $this->settings['postQueuePaused'] ) {
 				wp_update_post( $post_data );
 			}
 
@@ -344,7 +344,7 @@ class Manager {
 
 		$updated_posts = $this->recalculate_publish_times( $new_order );
 
-		if ( ! $this->settings['wpQueuePaused'] ) {
+		if ( ! $this->settings['postQueuePaused'] ) {
 			foreach ( $updated_posts as $post ) {
 				$this->update_scheduled_event( $post['ID'], strtotime( $post['new_publish_time'] ) );
 			}

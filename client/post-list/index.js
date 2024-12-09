@@ -13,7 +13,7 @@ import './index.css';
 
 document.addEventListener( 'DOMContentLoaded', function () {
 	const list = document.getElementById( 'the-list' );
-	if ( list && wpQueuePluginPostListData.isQueuePage ) {
+	if ( list && postQueuePluginPostListData.isQueuePage ) {
 		Sortable.create( list, {
 			animation: 150,
 			onEnd() {
@@ -36,7 +36,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				const option = document.createElement( 'option' );
 				option.value = 'queued';
 				option.textContent = 'Queued';
-				option.selected = wpQueuePluginPostListData.isQueuePage;
+				option.selected = postQueuePluginPostListData.isQueuePage;
 				select.appendChild( option );
 			}
 		} );
@@ -97,7 +97,7 @@ function recalculatePublishTimes( newOrder ) {
 		? newOrder.map( ( key ) => key.replace( 'post-', '' ) )
 		: [];
 	apiFetch( {
-		path: '/wp-post-queue/v1/recalculate',
+		path: '/post-queue/v1/recalculate',
 		method: 'POST',
 		data: { order: newOrder },
 	} )

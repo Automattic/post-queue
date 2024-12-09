@@ -22,18 +22,18 @@ import './store';
  * @param props.settings.publishTimes
  * @param props.settings.startTime
  * @param props.settings.endTime
- * @param props.settings.wpQueuePaused
+ * @param props.settings.postQueuePaused
  * @param props.saveSettings
  */
 const SettingsPanel = ( {
-	settings: { publishTimes, startTime, endTime, wpQueuePaused },
+	settings: { publishTimes, startTime, endTime, postQueuePaused },
 	saveSettings,
 } ) => {
 	const [ localPublishTimes, setLocalPublishTimes ] =
 		useState( publishTimes );
 	const [ localStartTime, setLocalStartTime ] = useState( startTime );
 	const [ localEndTime, setLocalEndTime ] = useState( endTime );
-	const [ isPaused, setIsPaused ] = useState( wpQueuePaused );
+	const [ isPaused, setIsPaused ] = useState( postQueuePaused );
 	const [ isDirty, setIsDirty ] = useState( false );
 	const [ error, setError ] = useState( '' );
 	const [ isLoading, setIsLoading ] = useState( false );
@@ -42,8 +42,8 @@ const SettingsPanel = ( {
 		setLocalPublishTimes( publishTimes );
 		setLocalStartTime( startTime );
 		setLocalEndTime( endTime );
-		setIsPaused( wpQueuePaused );
-	}, [ publishTimes, startTime, endTime, wpQueuePaused ] );
+		setIsPaused( postQueuePaused );
+	}, [ publishTimes, startTime, endTime, postQueuePaused ] );
 
 	const handlePublishTimesChange = ( value ) => {
 		setLocalPublishTimes( value );
@@ -76,7 +76,7 @@ const SettingsPanel = ( {
 				publish_times: localPublishTimes,
 				start_time: localStartTime,
 				end_time: localEndTime,
-				wp_queue_paused: !! isPaused,
+				post_queue_paused: !! isPaused,
 			} );
 
 			updateTable( response );
@@ -92,7 +92,7 @@ const SettingsPanel = ( {
 	const handlePause = async () => {
 		try {
 			await saveSettings( {
-				wp_queue_paused: true,
+				post_queue_paused: true,
 			} );
 			setIsPaused( true );
 		} catch ( pauseError ) {
@@ -109,7 +109,7 @@ const SettingsPanel = ( {
 		try {
 			setIsLoading( true ); // Move this outside of the try block to ensure it's always called
 			await saveSettings( {
-				wp_queue_paused: false,
+				post_queue_paused: false,
 			} );
 
 			// Ensure consistent hook usage
@@ -133,7 +133,7 @@ const SettingsPanel = ( {
 
 	const shuffleQueue = async () => {
 		apiFetch( {
-			path: '/wp-post-queue/v1/shuffle',
+			path: '/post-queue/v1/shuffle',
 			method: 'POST',
 		} )
 			.then( ( response ) => {
@@ -284,17 +284,17 @@ const SettingsPanel = ( {
 			<p>
 				{ __( 'Timezone:', 'post-queue' ) }{ ' ' }
 				{ getTimezoneDisplay(
-					wpQueuePluginData.timezone,
-					wpQueuePluginData.gmtOffset
+					postQueuePluginData.timezone,
+					postQueuePluginData.gmtOffset
 				) }{ ' ' }
 				(
-				<a href={ wpQueuePluginData.settingsUrl }>
+				<a href={ postQueuePluginData.settingsUrl }>
 					{ __( 'change', 'post-queue' ) }
 				</a>
 				)
 				<br />
 				{ __( 'Local Time:', 'post-queue' ) }{ ' ' }
-				{ getLocalDateTime( wpQueuePluginData.gmtOffset ) }
+				{ getLocalDateTime( postQueuePluginData.gmtOffset ) }
 			</p>
 			<div className="settings-actions">
 				<Button isSecondary onClick={ shuffleQueue }>
@@ -335,11 +335,11 @@ const SettingsPanel = ( {
 
 export const ConnectedSettingsPanel = compose(
 	withSelect( ( select ) => ( {
-		settings: select( 'wp-post-queue/store' ).getSettings(),
+		settings: select( 'post-queue/store' ).getSettings(),
 	} ) ),
 	withDispatch( ( dispatch ) => ( {
 		saveSettings: ( settings ) => {
-			return dispatch( 'wp-post-queue/store' ).saveSettings( settings );
+			return dispatch( 'post-queue/store' ).saveSettings( settings );
 		},
 	} ) )
 )( SettingsPanel );

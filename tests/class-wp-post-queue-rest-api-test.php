@@ -1,12 +1,12 @@
 <?php
 
-use WP_Post_Queue\REST_API;
+use Post_Queue\REST_API;
 
 /**
  * Test the REST_API class.
  * Which is responsible for the REST API side of the plugin.
  */
-class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
+class Test_Post_Queue_REST_API extends WP_UnitTestCase {
 	private $rest_api;
 	private $settings;
 
@@ -18,10 +18,10 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->settings = array(
-			'publishTimes'  => 2,
-			'startTime'     => '12 am',
-			'endTime'       => '1 am',
-			'wpQueuePaused' => false,
+			'publishTimes'    => 2,
+			'startTime'       => '12 am',
+			'endTime'         => '1 am',
+			'postQueuePaused' => false,
 		);
 		$this->rest_api = new REST_API( $this->settings );
 
@@ -35,14 +35,14 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_settings() {
-		$fetched_response = rest_do_request( new WP_REST_Request( 'GET', '/wp-post-queue/v1/settings' ) );
+		$fetched_response = rest_do_request( new WP_REST_Request( 'GET', '/post-queue/v1/settings' ) );
 		$settings         = $fetched_response->get_data();
 
 		$this->assertIsArray( $settings );
 		$this->assertArrayHasKey( 'publishTimes', $settings );
 		$this->assertArrayHasKey( 'startTime', $settings );
 		$this->assertArrayHasKey( 'endTime', $settings );
-		$this->assertArrayHasKey( 'wpQueuePaused', $settings );
+		$this->assertArrayHasKey( 'postQueuePaused', $settings );
 	}
 
 	/**
@@ -51,11 +51,11 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_update_settings() {
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/settings' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/settings' );
 		$request->set_param( 'publish_times', 3 );
 		$request->set_param( 'start_time', '1 am' );
 		$request->set_param( 'end_time', '2 am' );
-		$request->set_param( 'wp_queue_paused', true );
+		$request->set_param( 'post_queue_paused', true );
 
 		$response = rest_do_request( $request );
 
@@ -63,13 +63,13 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 
 		$updated_settings = $this->rest_api->get_settings();
-		$fetched_response = rest_do_request( new WP_REST_Request( 'GET', '/wp-post-queue/v1/settings' ) );
+		$fetched_response = rest_do_request( new WP_REST_Request( 'GET', '/post-queue/v1/settings' ) );
 		$fetched_settings = $fetched_response->get_data();
 
 		$this->assertEquals( 3, $fetched_settings['publishTimes'] );
 		$this->assertEquals( '1 am', $fetched_settings['startTime'] );
 		$this->assertEquals( '2 am', $fetched_settings['endTime'] );
-		$this->assertTrue( $fetched_settings['wpQueuePaused'] );
+		$this->assertTrue( $fetched_settings['postQueuePaused'] );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 			'invalid start_time'              => array( 'start_time', '25 am' ),
 			'invalid end_time'                => array( 'end_time', '13 pm' ),
 			'invalid end_time, random string' => array( 'end_time', 'random string' ),
-			'invalid wp_queue_paused'         => array( 'wp_queue_paused', 'not_a_boolean' ),
+			'invalid post_queue_paused'       => array( 'post_queue_paused', 'not_a_boolean' ),
 		);
 	}
 
@@ -99,7 +99,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_update_settings_invalid_parameters( $param, $value ) {
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/settings' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/settings' );
 		$request->set_param( $param, $value );
 
 		$response = rest_do_request( $request );
@@ -119,7 +119,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
 		);
 
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/recalculate' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/recalculate' );
 		$request->set_param( 'order', array_reverse( $post_ids ) );
 
 		$response = rest_do_request( $request );
@@ -139,7 +139,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_recalculate_publish_times_invalid_order() {
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/recalculate' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/recalculate' );
 		$request->set_param( 'order', 'not_an_array' ); // Invalid value
 
 		$response = rest_do_request( $request );
@@ -160,7 +160,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
 		);
 
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/shuffle' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/shuffle' );
 
 		$response = rest_do_request( $request );
 
@@ -182,7 +182,7 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 		// Clear the current user to simulate an unauthenticated request
 		wp_set_current_user( 0 );
 
-		$request  = new WP_REST_Request( 'POST', '/wp-post-queue/v1/settings' );
+		$request  = new WP_REST_Request( 'POST', '/post-queue/v1/settings' );
 		$response = rest_do_request( $request );
 
 		$this->assertErrorResponse( 'rest_forbidden', $response, 401 );
@@ -193,14 +193,14 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 			$this->factory->post->create( array( 'post_status' => 'queued' ) ),
 		);
 
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/recalculate' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/recalculate' );
 		$request->set_param( 'order', array_reverse( $post_ids ) );
 
 		$response = rest_do_request( $request );
 
 		$this->assertErrorResponse( 'rest_forbidden', $response, 401 );
 
-		$request  = new WP_REST_Request( 'POST', '/wp-post-queue/v1/shuffle' );
+		$request  = new WP_REST_Request( 'POST', '/post-queue/v1/shuffle' );
 		$response = rest_do_request( $request );
 
 		$this->assertErrorResponse( 'rest_forbidden', $response, 401 );
@@ -239,12 +239,12 @@ class Test_WP_Post_Queue_REST_API extends WP_UnitTestCase {
 		// Create a post with 'queued' status
 		$post_id = $this->factory->post->create( array( 'post_status' => 'queued' ) );
 
-		$request = new WP_REST_Request( 'POST', '/wp-post-queue/v1/recalculate' );
+		$request = new WP_REST_Request( 'POST', '/post-queue/v1/recalculate' );
 		$request->set_param( 'order', array( $post_id ) );
 		rest_do_request( $request );
 
 		// Get the next queue time
-		$request  = new WP_REST_Request( 'GET', '/wp-post-queue/v1/next-queue-time' );
+		$request  = new WP_REST_Request( 'GET', '/post-queue/v1/next-queue-time' );
 		$response = rest_do_request( $request );
 
 		$data = $response->get_data();

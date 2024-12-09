@@ -1,12 +1,12 @@
 <?php
 
-use WP_Post_Queue\Manager;
+use Post_Queue\Manager;
 
 /**
  * Test the Manager class.
  * Which is responsible for the queueing and publishing logic.
  */
-class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
+class Test_Post_Queue_Manager extends WP_UnitTestCase {
 	private $manager;
 	private $settings;
 
@@ -18,10 +18,10 @@ class Test_WP_Post_Queue_Manager extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->settings = array(
-			'publishTimes'  => 2,
-			'startTime'     => '12 am',
-			'endTime'       => '1 am',
-			'wpQueuePaused' => false,
+			'publishTimes'    => 2,
+			'startTime'       => '12 am',
+			'endTime'         => '1 am',
+			'postQueuePaused' => false,
 		);
 
 		$this->manager = $this->getMockBuilder( Manager::class )

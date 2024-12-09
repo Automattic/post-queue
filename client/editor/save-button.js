@@ -8,8 +8,8 @@ import { registerPlugin } from '@wordpress/plugins';
 import useInterceptPluginSidebar from './hooks/use-intercept-plugin-sidebar';
 import './index.css';
 
-export const pluginName = 'wp-post-queue-save';
-export const sidebarName = 'wp-post-queue-sidebar';
+export const pluginName = 'post-queue-save';
+export const sidebarName = 'post-queue-sidebar';
 
 const CustomInnerSaveButton = ( {
 	buttonText,
@@ -17,7 +17,7 @@ const CustomInnerSaveButton = ( {
 	isDisabled,
 	isTinyViewport,
 } ) => {
-	const classNames = `wp-post-queue-save-button ${
+	const classNames = `post-queue-save-button ${
 		isSavingPost ? 'is-busy' : ''
 	} ${ isDisabled ? 'is-disabled' : '' } ${
 		isTinyViewport ? 'is-tiny' : ''

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Post_Queue;
+namespace Post_Queue;
 
 /**
  * The Admin class is responsible for the admin UI side of the plugin.
@@ -85,18 +85,18 @@ class Admin {
 	 */
 	public function enqueue_block_editor_assets() {
 		wp_enqueue_script(
-			'wp-queue-plugin',
+			'post-queue-plugin',
 			plugins_url( '/build/editor.js', __DIR__ ),
 			array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-compose' ),
-			WP_POST_QUEUE_VERSION,
+			POST_QUEUE_VERSION,
 			true
 		);
 
 		wp_enqueue_style(
-			'wp-post-queue-editor-css',
+			'post-queue-editor-css',
 			plugins_url( '/build/editor.css', __DIR__ ),
 			array(),
-			WP_POST_QUEUE_VERSION
+			POST_QUEUE_VERSION
 		);
 	}
 
@@ -114,16 +114,16 @@ class Admin {
 
 		if ( ! use_block_editor_for_post( $post ) && 'post' === $screen->base ) {
 			wp_enqueue_script(
-				'wp-post-queue-classic-editor-script',
+				'post-queue-classic-editor-script',
 				plugins_url( '/build/classic-editor.js', __DIR__ ),
 				array( 'wp-api', 'wp-api-fetch' ),
-				WP_POST_QUEUE_VERSION,
+				POST_QUEUE_VERSION,
 				true
 			);
 
 			wp_localize_script(
-				'wp-post-queue-classic-editor-script',
-				'wpQueuePluginData',
+				'post-queue-classic-editor-script',
+				'postQueuePluginData',
 				array(
 					'isNewPost' => 'post-new.php' === $hook ? true : false,
 				)
@@ -142,16 +142,16 @@ class Admin {
 	public function enqueue_post_list_script( $hook ) {
 		if ( 'edit.php' === $hook ) {
 			wp_enqueue_script(
-				'wp-post-queue-post-list-script',
+				'post-queue-post-list-script',
 				plugins_url( '/build/post-list.js', __DIR__ ),
 				array( 'wp-data', 'wp-api', 'wp-api-fetch' ),
-				WP_POST_QUEUE_VERSION,
+				POST_QUEUE_VERSION,
 				true
 			);
 
 			wp_localize_script(
-				'wp-post-queue-post-list-script',
-				'wpQueuePluginPostListData',
+				'post-queue-post-list-script',
+				'postQueuePluginPostListData',
 				array(
 					'isQueuePage' => 'queued' === get_query_var( 'post_status' ) ? true : false,
 				)
@@ -170,10 +170,10 @@ class Admin {
 	public function enqueue_post_list_style( $hook ) {
 		if ( 'edit.php' === $hook ) {
 			wp_enqueue_style(
-				'wp-post-queue-post-list-css',
+				'post-queue-post-list-css',
 				plugins_url( '/build/post-list.css', __DIR__ ),
 				array(),
-				WP_POST_QUEUE_VERSION
+				POST_QUEUE_VERSION
 			);
 		}
 	}
@@ -189,16 +189,16 @@ class Admin {
 	public function enqueue_settings_panel_script( $hook ) {
 		if ( 'edit.php' === $hook && 'queued' === get_query_var( 'post_status' ) ) {
 			wp_enqueue_script(
-				'wp-queue-settings-panel-script',
+				'post-queue-settings-panel-script',
 				plugins_url( '/build/settings-panel.js', __DIR__ ),
 				array( 'wp-element', 'wp-components', 'wp-data', 'wp-api', 'wp-api-fetch', 'wp-redux-routine' ),
-				WP_POST_QUEUE_VERSION,
+				POST_QUEUE_VERSION,
 				true
 			);
 
 			wp_localize_script(
-				'wp-queue-settings-panel-script',
-				'wpQueuePluginData',
+				'post-queue-settings-panel-script',
+				'postQueuePluginData',
 				array(
 					'settingsUrl'   => admin_url( 'options-general.php' ),
 					'timezone'      => get_option( 'timezone_string' ),
@@ -207,7 +207,7 @@ class Admin {
 					'publishTimes'  => $this->settings['publishTimes'],
 					'startTime'     => $this->settings['startTime'],
 					'endTime'       => $this->settings['endTime'],
-					'wpQueuePaused' => $this->settings['wpQueuePaused'],
+					'postQueuePaused' => $this->settings['postQueuePaused'],
 				)
 			);
 		}
@@ -223,10 +223,10 @@ class Admin {
 	public function enqueue_settings_panel_style( $hook ) {
 		if ( 'edit.php' === $hook && 'queued' === get_query_var( 'post_status' ) ) {
 			wp_enqueue_style(
-				'wp-queue-settings-panel-css',
+				'post-queue-settings-panel-css',
 				plugins_url( '/build/settings-panel.css', __DIR__ ),
 				array( 'wp-components', 'wp-preferences' ),
-				WP_POST_QUEUE_VERSION
+				POST_QUEUE_VERSION
 			);
 		}
 	}
@@ -237,10 +237,10 @@ class Admin {
 	 * @return void
 	 */
 	public function register_settings() {
-		register_setting( 'wp_queue_settings', 'wp_queue_publish_times' );
-		register_setting( 'wp_queue_settings', 'wp_queue_start_time' );
-		register_setting( 'wp_queue_settings', 'wp_queue_end_time' );
-		register_setting( 'wp_queue_settings', 'wp_queue_paused' );
+		register_setting( 'post_queue_settings', 'post_queue_publish_times' );
+		register_setting( 'post_queue_settings', 'post_queue_start_time' );
+		register_setting( 'post_queue_settings', 'post_queue_end_time' );
+		register_setting( 'post_queue_settings', 'post_queue_paused' );
 
 		$this->settings = $this->get_settings();
 	}
@@ -252,17 +252,17 @@ class Admin {
 	 */
 	public function get_settings() {
 		$default_settings = array(
-			'publishTimes'  => 2,
-			'startTime'     => '12 am',
-			'endTime'       => '1 am',
-			'wpQueuePaused' => false,
+			'publishTimes'    => 2,
+			'startTime'       => '12 am',
+			'endTime'         => '1 am',
+			'postQueuePaused' => false,
 		);
 
 		return array(
-			'publishTimes'  => get_option( 'wp_queue_publish_times', $default_settings['publishTimes'] ),
-			'startTime'     => get_option( 'wp_queue_start_time', $default_settings['startTime'] ),
-			'endTime'       => get_option( 'wp_queue_end_time', $default_settings['endTime'] ),
-			'wpQueuePaused' => get_option( 'wp_queue_paused', $default_settings['wpQueuePaused'] ),
+			'publishTimes'    => get_option( 'post_queue_publish_times', $default_settings['publishTimes'] ),
+			'startTime'       => get_option( 'post_queue_start_time', $default_settings['startTime'] ),
+			'endTime'         => get_option( 'post_queue_end_time', $default_settings['endTime'] ),
+			'postQueuePaused' => get_option( 'post_queue_paused', $default_settings['postQueuePaused'] ),
 		);
 	}
 
