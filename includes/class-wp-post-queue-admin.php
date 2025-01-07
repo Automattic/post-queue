@@ -237,10 +237,34 @@ class Admin {
 	 * @return void
 	 */
 	public function register_settings() {
-		register_setting( 'post_queue_settings', 'post_queue_publish_times' );
-		register_setting( 'post_queue_settings', 'post_queue_start_time' );
-		register_setting( 'post_queue_settings', 'post_queue_end_time' );
-		register_setting( 'post_queue_settings', 'post_queue_paused' );
+		register_setting(
+			'post_queue_settings',
+			'post_queue_publish_times',
+			array(
+				'sanitize_callback' => 'absint',
+			)
+		);
+		register_setting(
+			'post_queue_settings',
+			'post_queue_start_time',
+			array(
+				'sanitize_callback' => 'sanitize_text_field',
+			)
+		);
+		register_setting(
+			'post_queue_settings',
+			'post_queue_end_time',
+			array(
+				'sanitize_callback' => 'sanitize_text_field',
+			)
+		);
+		register_setting(
+			'post_queue_settings',
+			'post_queue_paused',
+			array(
+				'sanitize_callback' => 'rest_sanitize_boolean',
+			)
+		);
 
 		$this->settings = $this->get_settings();
 	}
