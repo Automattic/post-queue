@@ -24,7 +24,7 @@
     "@wordpress/edit-post": "^8.9.0",
     "@wordpress/interface": "^7.0.0",
     "@wordpress/plugins": "^7.9.0",
-    "@wordpress/scripts": "^30.2.0",
+    "@wordpress/scripts": "^30.27.0",
     "react": "^18.3.1",
     "sortablejs": "^1.15.3"
   },
